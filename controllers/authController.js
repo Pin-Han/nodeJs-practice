@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const sendEmail = require('./../utils/email');
 
 const signToken = id => {
   return jwt.sign(
@@ -38,7 +39,6 @@ exports.signup = catchAsync(async (req, res) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-
   //1) Check if email and password
   if (!email || !password) {
     next(new AppError('Please provide email and password', 400));
@@ -111,3 +111,22 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError('There is no user with email address.', 404));
+  }
+  // 2) Generate the random reset token
+  const resetToken = user.createPasswordResetToken({
+    validateBeforeSave: false
+  });
+  await user.save({ validateBeforeSave: false });
+  //3) Send it to user's email
+  const resetURL
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  next();
+});
