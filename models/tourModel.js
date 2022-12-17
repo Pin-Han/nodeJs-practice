@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+// const User = require('./userModel');
 // const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
@@ -103,7 +103,12 @@ const tourSchema = new mongoose.Schema(
         day: Number
       }
     ],
-    guides: Array
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User' //另一個 schema 的名字
+      }
+    ]
   },
   {
     toJSON: { virtuals: true },
@@ -121,11 +126,11 @@ tourSchema.pre('save', function(next) {
   next();
 });
 
-tourSchema.pre('save', async function(next) {
-  const guidesPromise = this.guides.map(async id => await User.findById(id));
-  this.guides = await Promise.all(guidesPromise);
-  next();
-});
+// tourSchema.pre('save', async function(next) {
+//   const guidesPromise = this.guides.map(async id => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromise);
+//   next();
+// });
 
 // tourSchema.pre('save', function(next) {
 //   console.log('Will save document...');
@@ -143,6 +148,17 @@ tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
 
   this.start = Date.now();
+  next();
+});
+
+// find 開頭的所有 method
+tourSchema.pre(/^find/, function(next) {
+  // 'this' always points to the current query
+  this.populate({
+    path: 'guides', //guides裡的資料連結連結 User dataset 裡相對應的資料
+    select: '-__v -passwordChangedAt' //回傳的資料排除 __v & passwordChangedAt
+  });
+
   next();
 });
 
