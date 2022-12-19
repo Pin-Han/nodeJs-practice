@@ -120,6 +120,13 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review', //model name
+  foreignField: 'tour', //Reviews model key [對於 Review model 來說]
+  localField: '_id'
+});
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
@@ -156,7 +163,7 @@ tourSchema.pre(/^find/, function(next) {
   // 'this' always points to the current query
   this.populate({
     path: 'guides', //guides裡的資料連結連結 User dataset 裡相對應的資料
-    select: '-__v -passwordChangedAt' //回傳的資料排除 __v & passwordChangedAt
+    select: '-__v -passwordChangedAt' //回傳的資料前面加上 - 為排除 __v & passwordChangedAt
   });
 
   next();

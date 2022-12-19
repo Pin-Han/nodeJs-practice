@@ -34,6 +34,21 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.pre(/^find/, function(next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name' //僅回傳 name 這個欄位
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo'
+  // });
+  this.populate({
+    path: 'user',
+    select: 'name photo'
+  });
+  next();
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
