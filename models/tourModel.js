@@ -124,7 +124,7 @@ tourSchema.virtual('durationWeeks').get(function() {
 tourSchema.virtual('reviews', {
   ref: 'Review', //model name
   foreignField: 'tour', //Reviews model key [對於 Review model 來說]
-  localField: '_id'
+  localField: '_id' // this model [tour]
 });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
