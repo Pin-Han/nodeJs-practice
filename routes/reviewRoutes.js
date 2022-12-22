@@ -3,7 +3,11 @@ const express = require('express');
 const reviewController = require('./../controllers/reviewController');
 const authController = require('./../controllers/authController');
 
-const router = express();
+// MergeParams -> To keep the parent req.params
+const router = express.Router({ mergeParams: true });
+
+// POST /tour/2342324/reviews
+// GET /tour/423232/reviews
 
 router
   .route('/')
