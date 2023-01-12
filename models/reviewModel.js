@@ -35,6 +35,8 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function(next) {
   // this.populate({
   //   path: 'tour',
@@ -84,7 +86,7 @@ reviewSchema.post('save', function() {
   // this.constructor ->
   // console.log('save', this.constructor);
   this.constructor.calcAverageRating(this.tour);
-  console.log('middle post ', this.constructor);
+  // console.log('middle post ', this.constructor);
 });
 
 // Run before save a document in DB -> PRE
